@@ -7,6 +7,7 @@ require 'json'
 require 'digest'
 require 'pathname'
 require 'fileutils'
+require 'mini_magick'
 require_relative 'collada'
 
 class ConvertCollada
@@ -27,6 +28,21 @@ class ConvertCollada
     mkdir_p destination
     write_json
     copy_files
+    resize_textures
+  end
+
+  # Resizing images to be a square and the dimensions to be a power of 2,
+  # because WebGL doesn't support other sizes.
+  # NB: this means that the key isn't the real MD5 hash anymore.
+  def resize_textures
+    data[:textures].each_value do |image|
+      target = destination.join(image)
+      image = MiniMagick::Image.open(target)
+      size = [ image[:width], image[:height] ].min
+      size = 2 ** Math.log(size, 2).floor
+      image.resize "#{size}x#{size}!"
+      image.write target.to_s
+    end
   end
 
   def write_json

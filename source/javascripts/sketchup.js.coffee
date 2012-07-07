@@ -1,13 +1,14 @@
 class Sketchup
   constructor: ->
     @textureBuffers = {}
+    @buffered = false
 
   draw: ->
-    @drawObject(geometry) for geometry in @data.geometries
-    # @drawObject(@data[0])
+    if @buffered
+      @drawObject(geometry) for geometry in @data.geometries
 
   buffer: ->
-    $.getJSON('models/cubism.json', @handleData )
+    $.getJSON("models/cubism.json?_#{(new Date).getTime()}", @handleData )
     # @data    = window.loaded_objects.scene
     # @textures = window.loaded_objects.textures
 
@@ -18,6 +19,7 @@ class Sketchup
     @data = data
     @initTextures(data.textures)
     @bufferObject(geometry) for geometry in data.geometries
+    @buffered = true
 
   drawObject: (data) ->
     gl.bindBuffer(gl.ARRAY_BUFFER, data.vertexPositionBuffer)

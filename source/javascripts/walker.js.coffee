@@ -20,7 +20,7 @@ class Walker
 
 
     @models = []
-    @models[0] = new window.Sketchup
+    @models.push new window.Sketchup
 
     if gl
       gl.clearColor(0.0, 0.0, 0.0, 1.0)  # Clear to black, fully opaque
@@ -31,30 +31,27 @@ class Walker
       gl.initShaders()
 
       # @initBuffers(gl)
-      model.buffer() for model in @models
-
+      for model in @models
+        model.buffer()
       @start()
 
   start: ->
-    setInterval(@drawLoop, 15, @)
+    setInterval(@drawScene, 15)
 
-  drawLoop: (scope) ->
-    scope.drawScene()
+  handleMouseDown: (event) =>
+    @startMoveCamera([event.x, event.y])
 
-  handleMouseDown: (event) ->
-    window.walker.startMoveCamera([event.x, event.y])
+  handleMouseUp: (event) =>
+    @endMoveCamera()
 
-  handleMouseUp: (event) ->
-    window.walker.endMoveCamera()
+  handleMouseMove: (event) =>
+    @moveCamera([event.x, event.y])
 
-  handleMouseMove: (event) ->
-    window.walker.moveCamera([event.x, event.y])
+  handleKeyDown: (event) =>
+    @currentlyPressedKeys[event.keyCode] = true
 
-  handleKeyDown: (event) ->
-    window.walker.currentlyPressedKeys[event.keyCode] = true
-
-  handleKeyUp: (event) ->
-    window.walker.currentlyPressedKeys[event.keyCode] = false
+  handleKeyUp: (event) =>
+    @currentlyPressedKeys[event.keyCode] = false
 
   startMoveCamera: (pos) ->
     @clicked = true
@@ -90,8 +87,7 @@ class Walker
     return (((new Date).getTime() - @currentTime) / 1000)
 
 
-  drawScene: ->
-    # this = scope
+  drawScene: =>
     @handleKeys()
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
