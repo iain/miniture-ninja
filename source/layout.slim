@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    meta charset="utf-8"
+    meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"
+    == javascript_include_tag "lib.js"
+    == javascript_include_tag "app.js"
+    == stylesheet_link_tag "site.css"
+    == yield_content :head
+
+  body
+    == yield
