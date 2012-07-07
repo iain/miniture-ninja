@@ -12,8 +12,10 @@ class Collada
   end
 
   def as_json
-    { geometries: geometries,
-      textures: Hash[textures] }
+    {
+      geometries: geometries,
+      textures: Hash[textures]
+    }
   end
 
   def geometries
@@ -62,9 +64,20 @@ class Collada
   def material(in_geo)
     material_id = in_geo.css("bind_material instance_material").first[:target]
     effect_id = doc.css("#{material_id} instance_effect").first[:url]
-    image_id  = doc.css("#{effect_id} init_from").first.content
-    filename = doc.css("##{image_id} init_from").first.content
-    {texture: md5(filename)}
+    color_doc = doc.css("#{effect_id} color")
+    if color_doc.any?
+      {
+        color: color_doc.first.content.split(/\s+/).map(&:to_f),
+        texture: nil
+      }
+    else
+      image_id  = doc.css("#{effect_id} init_from").first.content
+      filename = doc.css("##{image_id} init_from").first.content
+      {
+        texture: md5(filename),
+        color: [1,1,1,1]
+      }
+    end
   end
 
   def textures
