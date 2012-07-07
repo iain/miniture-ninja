@@ -19,7 +19,10 @@ class Collada
   end
 
   def geometries
-    doc.css("library_visual_scenes visual_scene node instance_geometry").map do |in_geo|
+    doc.css("instance_geometry").select { |in_geo|
+      url = in_geo[:url]
+      doc.css("#{url} triangles input[semantic=TEXCOORD]").first
+    }.map do |in_geo|
       url = in_geo[:url]
       {
         indices: indices(url),
@@ -57,8 +60,11 @@ class Collada
   end
 
   def texcoords(url)
-    source_url = doc.css("#{url} triangles input[semantic=TEXCOORD]").first[:source]
-    doc.css("#{source_url} float_array").first.content.split(/\s+/).map(&:to_f)
+    source = doc.css("#{url} triangles input[semantic=TEXCOORD]").first
+    if source
+      source_url = source[:source]
+      doc.css("#{source_url} float_array").first.content.split(/\s+/).map(&:to_f)
+    end
   end
 
   def material(in_geo)
