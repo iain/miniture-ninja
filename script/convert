@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/convert_collada'
+
+destination = "source/models"
+
+FileUtils.rm_r destination if File.exist?(destination)
+
+Dir["models/*.dae"].each do |file|
+  puts "Converting #{file}"
+  ConvertCollada.call(file, destination)
+end
+
+puts "Done"
