@@ -20,7 +20,7 @@ class Walker
 
 
     @models = []
-    @models[0] = new window.pillar
+    @models[0] = new window.Sketchup
 
     if gl
       gl.clearColor(0.0, 0.0, 0.0, 1.0);  # Clear to black, fully opaque
