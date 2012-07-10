@@ -34,7 +34,8 @@ class Collada
   end
 
   def indices(url)
-    doc.css("#{url} triangles p").first.content.split(/\s+/).select.with_index { |p, i| i.odd? }.map(&:to_i)
+    indices_count = doc.css("#{url} triangles").first[:count].to_i * 3
+    doc.css("#{url} triangles p").first.content.split(/\s+/).select.with_index { |p, i| i.even? }.map(&:to_i)[(0..indices_count)]
   end
 
   def vertices(url)
